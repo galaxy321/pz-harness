@@ -14,11 +14,11 @@ Current shipped versions: Test Ground 1.13.42, Test Ground Autorun 1.5.21, Test 
 | `TestGroundBridge/` | Lets a script send commands to a running game. |
 | `TestGroundMemory/`, `DriveRecorder/` | Smaller helper mods (memory sampling, drive recording). |
 | `crane-test-ground/` | Crane Test Ground: `mod/` is the game mod, `test/` its mock tests. |
-| `release/` | Steam Workshop packaging: `build.py`, `overlay/` (Workshop text), `Workshop/` (built layout), `art-*` previews, `RELEASE-CANDIDATE.md`. The Workshop build in this folder may lag the versions above; rebuild with `build.py`. |
+| `release/` | Steam Workshop packaging: `build.py` (rebuilds the Workshop layout from the mod trees), `overlay/` (Workshop text), `art-v2/`, `RELEASE-CANDIDATE.md`. `RELEASE-CANDIDATE.md` describes an older candidate (1.13.16) and is being rewritten. |
 | `docs/` | Guides, skills and `INDEX.md` (start there). |
 | `auto-queue/` | PowerShell scripts that queue and run test jobs on a Windows PC. Not part of the Steam package. |
-| `tools/`, `review/`, `ui-golden/`, `manual-drive-1016/` | Build helpers, review notes and reference material. |
-| `mock_test.py`, `autorun_mock_test.py`, `compare.py` | Mock tests that run the Lua with `lupa` (`python3 -I mock_test.py`; they expect `TestGround/42/...` next to them). |
+| `tools/`, `ui-golden/` | Build helpers, review notes and reference material. |
+| `mock_test.py`, `autorun_mock_test.py`, `ui_mock_test.py`, `compare.py` | Mock tests that run the Lua with `lupa` (`python3 -I mock_test.py`; they expect `TestGround/42/...` next to them). |
 
 Each mod folder follows the game layout: `42/` for Build 42 files and `common/`.
 
