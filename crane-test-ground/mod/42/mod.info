@@ -1,0 +1,5 @@
+name=Crane Test Ground
+id=CraneTestGround
+description=Dev tool: a Test Ground step for the Crane mod (build a crane on an upper floor, fill the box, check items can be stored, lifted and taken out, raise and lower it). Needs Test Ground and Crane.
+modversion=0.2.1
+versionMin=42.0.0

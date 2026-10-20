@@ -1,0 +1,7 @@
+name=Test Ground
+id=TestGround
+description=Performance test bench for singleplayer on the vanilla map. Runs one fixed, scripted test route from South St in West Point: a drive, a walk loop, two zombie fights, looting, a tree-lined road, a real car down the Dixie Highway at 120 km/h, a 500-zombie crowd and a drive in fog. Writes frame times (fps, p95, p99, hitches) per step to Zomboid/Lua/ so two mod setups can be compared. A run teleports you, spawns and removes zombies and changes time and weather in the save it runs in, so use a copy of your save. Right-click > Test Ground to start.
+poster=poster.png
+icon=icon.png
+modversion=@VERSION@
+versionMin=42.20.0

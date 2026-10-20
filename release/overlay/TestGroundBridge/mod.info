@@ -1,0 +1,8 @@
+name=Test Ground Bridge (for scripts and AI agents)
+id=TestGroundBridge
+require=\TestGround
+description=Lets scripts and AI agents drive Test Ground from outside the game, to build and run test cases for your own mods. Once a second it reads Zomboid/Lua/TestGround_cmd.txt, runs each line as a Test Ground command and writes the replies to Zomboid/Lua/TestGround_out.txt. It can also run "lua <code>" lines, but only when the game runs with -debug or the save's sandbox option "Test Ground Bridge: allow lua lines" is on (off by default). With that on, any program that can write that file can run Lua in your game, so turn it on only in a test save on your own machine. Every lua line is logged to Zomboid/Lua/TestGround_bridge_lua.txt. Singleplayer only. Includes a Claude skill (agent-skill folder) that teaches an agent how to use it.
+poster=poster.png
+icon=icon.png
+modversion=@VERSION@
+versionMin=42.20.0

@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PZ Testing Queue</title>
+<style>
+:root { --bg:#f7f7f5; --card:#fff; --fg:#1d1d1b; --muted:#6b6b66; --line:#e3e3de; --run:#1f6feb; --done:#2f8f4e; --wait:#b7791f; --held:#b42318; }
+@media (prefers-color-scheme: dark) { :root { --bg:#151514; --card:#1e1e1c; --fg:#ececea; --muted:#9a9a94; --line:#33332f; --run:#5b9dff; --done:#5fc27e; --wait:#e0a84a; --held:#ff6b5e; } }
+* { box-sizing:border-box; }
+body { margin:0; background:var(--bg); color:var(--fg); font:15px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; }
+main { max-width:1200px; margin:0 auto; padding:20px 16px 40px; }
+h1 { font-size:22px; margin:0 0 4px; }
+.sub { color:var(--muted); font-size:13px; margin-bottom:16px; }
+.now { background:var(--card); border:1px solid var(--line); border-left:4px solid var(--run); border-radius:8px; padding:14px 16px; margin-bottom:16px; }
+.now.idle { border-left-color:var(--muted); }
+.now .t { font-size:17px; font-weight:600; }
+.now pre { margin:8px 0 0; font:12px/1.4 ui-monospace, Consolas, monospace; color:var(--muted); white-space:pre-wrap; max-height:180px; overflow:auto; }
+.pill { display:inline-block; font-size:12px; padding:1px 8px; border-radius:99px; border:1px solid currentColor; margin-left:6px; }
+.pill.hold { color:var(--held); }
+table { width:100%; border-collapse:collapse; background:var(--card); border:1px solid var(--line); border-radius:8px; overflow:hidden; }
+th, td { text-align:left; vertical-align:top; padding:8px 10px; border-bottom:1px solid var(--line); font-size:13.5px; }
+th { font-size:12px; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); }
+tr:last-child td { border-bottom:none; }
+td.state { font-weight:600; white-space:normal; min-width:160px; }
+tr.s-done td.state { color:var(--done); } tr.s-run td.state { color:var(--run); } tr.s-wait td.state { color:var(--wait); } tr.s-held td.state { color:var(--held); }
+tr.s-done { opacity:.72; }
+.notes { margin-top:16px; color:var(--muted); font-size:13px; }
+.notes p { margin:6px 0; }
+.wrap { overflow-x:auto; }
+h2 { font-size:15px; margin:22px 0 8px; }
+#log { font:12px/1.4 ui-monospace, Consolas, monospace; color:var(--muted); white-space:pre-wrap; background:var(--card); border:1px solid var(--line); border-radius:8px; padding:10px 12px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>PZ Testing Queue</h1>
+  <div class="sub" id="sub">loading…</div>
+  <div class="now idle" id="eta"></div>
+  <div class="now idle" id="now"><div class="t">…</div></div>
+  <div class="wrap"><table id="q"></table></div>
+  <h2>Estimated times</h2>
+  <div id="etad" style="font:12px/1.5 ui-monospace, Consolas, monospace; white-space:pre-wrap; background:var(--card); border:1px solid var(--line); border-radius:8px; padding:10px 12px;"></div>
+  <div class="notes" id="notes"></div>
+  <h2>Queue log</h2>
+  <div id="log"></div>
+</main>
+<script>
+const arr = x => Array.isArray(x) ? x : (x == null ? [] : [x]);
+const esc = s => String(s ?? "").replace(/[&<>]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+const inline = s => esc(s).replace(/\*\*(.+?)\*\*/g, "<b>$1</b>").replace(/`(.+?)`/g, "<code>$1</code>");
+function cls(state) {
+  const s = state.toLowerCase();
+  if (/held|failed|blocked/.test(s)) return "s-held";
+  if (/running/.test(s)) return "s-run";
+  if (/^done|accepted|^run \d|done \d/.test(s)) return "s-done";
+  return "s-wait";
+}
+function render(st) {
+  document.getElementById("sub").textContent = "Updated " + st.now + " · refreshes every 5 s";
+  const now = document.getElementById("now");
+  const running = st.game && st.run && !st.runDone;
+  now.className = "now" + (running ? "" : " idle");
+  let t = running ? `Running: ${esc(st.run)} <span style="color:var(--muted);font-weight:400">(game up since ${esc(st.gameSince)})</span>`
+        : st.game ? `Game running (since ${esc(st.gameSince)})` : `Between runs · last: ${esc(st.run || "none")}`;
+  if (st.hold) t += `<span class="pill hold">queue on hold</span>`;
+  now.innerHTML = `<div class="t">${t}</div><pre>${esc(arr(st.runLog).join("\n"))}</pre>`;
+  const eta = arr(st.eta); const left = eta.filter(e => e.state !== "done");
+  document.getElementById("eta").innerHTML = left.length
+    ? `<div class="t">Estimated finish: ${esc(st.finish)}</div>`
+    : `<div class="t">Queue empty</div>`;
+  document.getElementById("etad").innerHTML = eta.filter(e => e.state !== "done").map(e => (e.state === "done" ? "done    " : e.state === "running" ? "now  -> " : "        ") + esc(e.at) + "  " + esc(e.name)).join("\n");
+  const lines = (st.queueMd || "").split(/\r?\n/);
+  // only the first table (running / queued); finished items are not part of the queue
+  const firstTable = []; let inT = false; for (const l of lines) { if (/^\|/.test(l)) { inT = true; firstTable.push(l); } else if (inT) break; }
+  const rows = firstTable.filter(l => !/^\|\s*-/.test(l) && !/\|\s*done\b/i.test(l.split("|")[3] || ""));
+  let html = "";
+  rows.forEach((r, i) => {
+    const cells = r.replace(/^\||\|$/g, "").split("|").map(c => c.trim());
+    if (i === 0) { html += "<tr>" + cells.map(c => `<th>${esc(c)}</th>`).join("") + "</tr>"; return; }
+    html += `<tr class="${cls(cells[2] || "")}">` + cells.map((c, j) => `<td${j === 2 ? ' class="state"' : ""}>${inline(c)}</td>`).join("") + "</tr>";
+  });
+  document.getElementById("q").innerHTML = html;
+  const notes = lines.filter(l => l.trim() && !/^\|/.test(l) && !/^#/.test(l) && !/^Updated/.test(l)).slice(-2);
+  document.getElementById("notes").innerHTML = notes.map(n => `<p>${inline(n)}</p>`).join("");
+  document.getElementById("log").textContent = arr(st.notes).join("\n");
+}
+async function tick() {
+  try { const r = await fetch("/state", {cache:"no-store"}); render(await r.json()); }
+  catch (e) { document.getElementById("sub").textContent = "Lost contact with the queue server; retrying…"; }
+}
+tick(); setInterval(tick, 5000);
+</script>
+</body>
+</html>

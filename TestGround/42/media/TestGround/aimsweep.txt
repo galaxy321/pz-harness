@@ -1,0 +1,18 @@
+# Test Ground's AIM SWEEP plan (1.13.42): research, not a performance test. One zombie held still at 4, 8 and 12 tiles, the
+# reticle walked up a ladder from below its feet to above its head, 2 shots per rung, a fresh zombie per shot (3 x 8 x 2 = 48
+# shots, about 3 minutes). Per shot: fired or not, the hit and the body part. DebugType.Combat is on for the step and a marker
+# line goes to console.txt before and after each shot (research/aimsweep-console.py reads them).
+# Run it with the bridge command "baseline aimsweep" or Autorun's plan = aimsweep.
+label = aimsweep
+settle = 20
+repeat = 1
+expect = 240              # seconds the run takes (settle included); Autorun's time-out is 1.5 x this + 300 s
+autostart = 0
+return = 1
+start = westpoint
+time = 12
+weather = clear
+zombies = none
+god = 1
+
+step = aimsweep 2 180 Aiming=6 aim_sweep

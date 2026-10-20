@@ -1,0 +1,5 @@
+name=Drive Recorder (dev tool)
+id=DriveRecorderDev
+description=Dev tool. Records how you drive: every 250 ms while you are in a driver's seat it writes the car's position, heading, speed, gas, brake, steering, engine speed, your health, the vehicles within 40 tiles and any knock to Zomboid/Lua/DriveRecorder_<time>.txt, one file per drive. Recording starts when you sit in the driver's seat and stops when you get out. F9 turns recording off and on. Needs no other mod. Singleplayer.
+modversion=1.0.0
+versionMin=42.0.0

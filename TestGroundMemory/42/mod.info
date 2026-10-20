@@ -1,0 +1,8 @@
+name=Test Ground Memory (ZombieBuddy)
+id=TestGroundMemory
+description=Test Ground submod. Adds a memory line under every Test Ground step: the game's RAM (the working set, as Task Manager shows it) and its peak, the Java heap against its maximum, free system RAM, and free VRAM on NVIDIA and AMD cards, sampled twice a second on a background thread. Needs Test Ground and ZombieBuddy; ZombieBuddy asks once to allow its unsigned jar.
+modversion=1.0.0
+versionMin=42.0.0
+require=\TestGround,ZombieBuddy
+javaJarFile=media/java/tgmemory.jar
+javaPkgName=pzmod.tgmemory

@@ -1,0 +1,16 @@
+# Test Ground's SHOOTING plan (1.13.38): the one Shooting step of the baseline on its own, about 90 seconds in all, for trying the
+# aim without a 17-minute run. Run it with the bridge command "baseline shooting" or Autorun's plan = shooting.
+# Same place and settings as quick.txt: the vanilla map from the fixed start at West Point.
+label = shooting
+settle = 20
+repeat = 1
+expect = 90               # seconds the run takes (settle included); Autorun's time-out is 1.5 x this + 300 s
+autostart = 0
+return = 1
+start = westpoint
+time = 12
+weather = clear
+zombies = none
+god = 1
+
+step = gunfight 8 40 Aiming=6 gun_pistol
