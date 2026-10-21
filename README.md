@@ -30,3 +30,8 @@ The `auto-queue/` scripts contain paths like `C:\Users\tony6\Zomboid\perf-logs`.
 ## Not included
 
 Credentials, Steam IDs and the ZombieBuddy signing material are not in this repository. Signed jars must be signed on your own machine.
+
+## Steam Workshop
+
+- PZ Harness: https://steamcommunity.com/sharedfiles/filedetails/?id=3823830771
+- PZ Harness Dev Add-on: https://steamcommunity.com/sharedfiles/filedetails/?id=3823830939
