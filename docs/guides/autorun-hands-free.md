@@ -47,4 +47,4 @@ Run the Load Fix uninstaller (and pzopt's), then reinstall a matching build afte
 - End every result note with `Not verified: ...` (what was inferred or not checked) or `Not verified: nothing`.
 
 ## Pending
-"Benchmark Save" will add an in-game way to pick a save and run on a throwaway copy, overlapping step 1 above for interactive use; Autorun keeps its own copy step.
+"Benchmark Save" (main menu button, Test Ground 1.13.43 and later) is the in-game way to pick a save and run on a throwaway copy. It and the flag-file engine behind it now ship inside the Test Ground mod (TestGroundAutorun.lua, TestGroundBenchmark.lua), so it works with Test Ground alone; copying a save also needs Test Ground Capture. The Autorun mod keeps the UI check and tour.

@@ -1,5 +1,7 @@
 --
--- Test Ground Autorun (dev tool).
+-- Test Ground Autorun engine. 1.13.43: this file now ships inside the Test Ground mod (moved from the Autorun mod),
+-- so the main-menu Benchmark Save button (TestGroundBenchmark.lua) works with Test Ground alone; the flag-file
+-- commands below are unchanged and still drive PC runs. The Autorun mod keeps the UI check and tour.
 --
 -- Hands-free test runs. Does nothing at all unless Zomboid/Lua/TestGround_autorun.txt exists and
 -- names a save:
@@ -67,7 +69,7 @@ if TestGroundAutorun then return end
 TestGroundAutorun = {}
 local A = TestGroundAutorun
 
-local VERSION = "1.5.21"
+local VERSION = "1.5.22"
 A.VERSION = VERSION
 local FLAG = "TestGround_autorun.txt"
 local DONE = "TestGround_autorun_done.txt"

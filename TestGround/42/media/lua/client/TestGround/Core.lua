@@ -58,7 +58,7 @@ local TG = TestGroundInternal
 local S = TG.S
 local T = TestGround
 
-local VERSION = "1.13.42"
+local VERSION = "1.13.43"
 local PLAN_FILE = "TestGround_plan.txt"
 
 local ENABLE_MENU = true

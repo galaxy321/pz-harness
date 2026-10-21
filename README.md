@@ -2,14 +2,14 @@
 
 Dev tools for Project Zomboid (Build 42) that run a fixed test plan in a singleplayer save, so a mod or patch can be measured and checked the same way every time.
 
-Current shipped versions: Test Ground 1.13.42, Test Ground Autorun 1.5.21, Test Ground Capture 1.0.8, Test Ground Bridge 1.1.0, Crane Test Ground 0.2.1.
+Current shipped versions: Test Ground 1.13.43, Test Ground Autorun 1.5.22, Test Ground Capture 1.0.8, Test Ground Bridge 1.1.0, Crane Test Ground 0.2.1.
 
 ## Layout
 
 | Folder | What it is |
 |---|---|
 | `TestGround/` | The main mod: test plans, steps, runner, report and end screen. Start with `TestGround/README` material in `docs/guides/quick-start.md`. |
-| `TestGroundAutorun/` | Loads a save and runs a plan hands-free, including Benchmark Save. |
+| `TestGroundAutorun/` | UI check and UI tour. Since 1.13.43 the hands-free autorun engine and Benchmark Save live in `TestGround/` itself. |
 | `TestGroundCapture/` | In-game screenshots, film and save copies. Lua plus a Java part (`java/`, needs ZombieBuddy and the game classes; `build.sh` documents the paths). The prebuilt `tgcapture.jar` is included. |
 | `TestGroundBridge/` | Lets a script send commands to a running game. |
 | `TestGroundMemory/`, `DriveRecorder/` | Smaller helper mods (memory sampling, drive recording). |

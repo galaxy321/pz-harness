@@ -1,20 +1,36 @@
-# Release candidate, 18 Oct 2026
+# Release candidate (updated 20 Oct 2026)
 
-**Test Ground 1.13.16** + **Test Ground Bridge 1.1.0**, built into `Workshop/` by `build.py` (source: `ship-1.13.16.zip`, sha256 `54796372...c59f`; set `TG_SRC_TestGround` to build from an unzipped ship folder).
+**Test Ground 1.13.43** (cleared Change review as the Steam candidate), **Autorun 1.5.22**, **Bridge 1.1.0**, **Capture 1.0.8**, **Memory 1.0.0**. Built into `Workshop/PZHarness` and `Workshop/PZHarnessDevAddon`; transport zip `workshop-1.13.43.zip`. Replaces the 18 Oct 1.13.16 candidate.
 
-Why 1.13.16 and not 1.13.18/19: it cleared review and ran on the PC (camera check and showcase). 1.13.18 cleared review but its drive run is still queued; 1.13.19 is still in review. Both only add driving fixes, a pop-up closer and a look-around test.
+## Must do before upload
+- PC run confirming Test Ground works alone (queued by the coordinator: quick test, UI tour, flag-file run).
+- The user clicks **Benchmark Save** on the release build and watches the end screen.
+- Art: art-v2 wired in (variant A main, pending the user's word); `workshop-1.13.43-art.zip` carries it. Upload the gallery how-to image on the Steam page by hand.
+- Create the Steam items; after the first upload copy each `workshop.id.txt` back.
 
-Left out: Autorun, Capture (Java), Crane Test Ground, ship-zip dev files, mock tests.
-Not in 1.13.16 (arrive with a later version): drive iteration 3-4 fixes, pop-up closer, mod:look.
+## Open
+- **Memory jar:** the packaged `tgmemory.jar` is the one reviewed on 18 Oct (confirmed by Change review, 20 Oct); keep Memory in.
+- **Capture placement:** built into PZ Harness because Benchmark Save needs it to copy a save; the user was asked on a decision card (`TG_CAPTURE_IN` flips it).
+- **Flag-file engine now ships in the core** (`TestGroundAutorun.lua`, inert without `Zomboid\Lua\TestGround_autorun.txt`; can load a named save, add mods to its list, make a new save, quit to desktop; runs no Lua from the file). Disclosed on the PZ Harness page. This differs from the 16 Oct rule that the core reads no command files.
+- Update both items together (Autorun 1.5.22 needs Test Ground 1.13.43; older Autorun duplicates two file names).
+- The test save's name appears in a comment in the core's `TestGroundAutorun.lua` and in UI-tour test data; scrub in a later build.
+- Core README doesn't yet mention Benchmark Save, the Capture requirement or the flag-file engine (asked of the Mod test ground thread); the Steam text does.
+- `shooting` and `aimsweep` research plans ship in the core; the page says they aren't part of the normal tests.
+- Fast drive still removes parked cars on the road (Benchmark Save runs in a copy; the page says so).
+- Open review Minors from 18 Oct (trace write every 10 s, stale done_loadN files, build cheat or gun mouse not restored if stopped mid-step), unless fixed since.
+- ZombieBuddy needs its own installer; the page links its Workshop item (3619862853).
+- Bridge skill updated for quick baseline, step kinds and durations; `skill` still names Bridge-era behaviour for the confirm dialog (see docs/notes/existing-bridge-skill-review.md items 3 and 6).
 
-Still open before upload: placeholder art; one run from the Workshop copies; fast drive still removes parked cars (obstacles = clear; disclosed in the confirm dialog and description); open review Minors (heartbeat trace write every 10 s, stale done_loadN files, build cheat/gun mouse not restored if stopped mid-step).
-Bridge 1.1.0 has no Bridge-specific review in the 18 Oct gate (only the 17 Oct "acceptable").
+## Left out on purpose
+Auto-queue (GitHub), autopilot and Autorun-hands-free guides, `pz-autorun-benchmark` skill, mock tests, Crane Test Ground.
 
-## Must-do before upload (added 18 Oct, 21:13)
-- **The user clicks the Benchmark Save button themselves on the release build and watches the end screen.** The button is the whole experience for people who only download the mod, so it is checked by hand, not only by a scripted run.
-- **1.13.22 (real test names, end screen, Benchmark Save) is now the likely release build** once its in-game check passes. It supersedes 1.13.16: repackage with `TG_SRC_TestGround=<unzipped ship>/TestGround python3 build.py`, rebuild `workshop-<version>.zip`, update this file and README, and rerun the Workshop-copy check.
+## Preview video (recorded 2026-10-21 03:14Z)
+- YouTube (user upload of showcase/showcase-film-v2.mp4): https://youtu.be/WZlsqgk8dAQ
+- To add on the PZ Harness Workshop page: Add/edit images and videos, paste the link (after upload).
+- Main preview art: variant A, final (user yes, 2026-10-21).
 
-## Workshop-copy run (release-check-1722, 21 min, reported 18 Oct 23:56)
-Result: all 16 baseline steps have frame stats, run ended "result: done", 0 ERROR/STACK TRACE lines from Test Ground or Bridge (the 552 hits were WARN "spawn zombie" lines), no refused or missing-file lines. Dev copies restored. Report: perf-logs\release-check-1722\TestGround_baseline_1792359454.txt.
-Gap: neither console nor report names Bridge 1.1.0 or the path the files loaded from, so the run does not prove the Workshop copies were the ones loaded.
-Decision: add one line each to the report header, "Test Ground Bridge <version>" (or "not installed") and the mod's load path, in the Test Ground thread's next build. Worth it: otherwise a user can't tell which copy a report came from. Recheck on the release build.
+## Published (unlisted) 2026-10-20 23:22 local, ids recorded 2026-10-21 03:25Z
+- PZ Harness: id=3823830771 https://steamcommunity.com/sharedfiles/filedetails/?id=3823830771
+- PZ Harness Dev Add-on: id=3823830939 https://steamcommunity.com/sharedfiles/filedetails/?id=3823830939
+- Uploaded package: workshop-1.13.43-art.zip (50e56e4d...). Ids saved in overlay/items/*/workshop.id.txt; next build.py run keeps them. Part B (hand check of Benchmark Save) not done; items stay unlisted.
+- Pending: gallery image + required-item link on add-on page + YouTube link (user, by hand); 1.13.44 split (Save copier mod / Capture to add-on).

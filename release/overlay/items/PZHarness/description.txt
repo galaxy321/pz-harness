@@ -1,0 +1,65 @@
+[h1]PZ Harness (Build 42 performance test bench)[/h1]
+
+Measure how a mod setup plays, the same way every time. PZ Harness drives, walks and fights through one fixed scripted route and writes the frame times of each part to a report, so you can compare two mod lists, a patch on and off, or a settings change, without replaying anything by hand.
+
+[b]Update both items together.[/b] The PZ Harness Dev Add-on needs the same version of this item.
+
+[h2]What is in this item[/h2]
+Each is a separate entry in the game's mod list. Tick only what you want.
+[list]
+[*][b]PZ Harness[/b]: the test bench itself. Required.
+[*][b]PZ Harness: Capture (needs ZombieBuddy)[/b], optional: lets Benchmark Save copy one of your saves. Without it only "New vanilla save" works.
+[*][b]PZ Harness: Memory (needs ZombieBuddy)[/b], optional: adds RAM, Java heap and VRAM lines under every step.
+[/list]
+The two optional ones are Java and need [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3619862853]ZombieBuddy[/url] (its page explains its installer). ZombieBuddy asks once to allow each unsigned jar. PZ Harness itself is plain Lua.
+
+[h2]Quick test or full test[/h2]
+[list]
+[*][b]Quick test (about 5 minutes):[/b] the steps that carry the most signal: looting, a drive, a 90 s fast drive with chunk loading, a melee fight and the 500-zombie crowd. Use it to check a change or compare two setups quickly.
+[*][b]Full test (about 15 minutes):[/b] the whole route below. Use it for a careful comparison.
+[/list]
+Both run the same fixed route from the same start, so a quick report compares only with another quick report, and a full report with another full one.
+
+[h2]How to use it[/h2]
+[olist]
+[*]In the main menu, click [b]Benchmark Save[/b].
+[*]Pick one of your saves (needs the Capture submod), or [b]New vanilla save[/b]. PZ Harness tests a [b]thrown-away copy[/b] of it, so your own save is never touched. The copy is deleted the next time you reach the main menu.
+[*]Press [b]Quick test[/b] or [b]Start full benchmark[/b], and leave the game window in front: if the game pauses when it loses focus, the run pauses too.
+[*]When the run ends, an end screen shows the key figures and counts down to closing the game; a button pauses the countdown.
+[/olist]
+The full report is written to [i]Zomboid\Lua\TestGround_<name>_<id>.txt[/i], with a per-second CSV and a spike list next to it.
+Already in a save? Right-click the ground > [b]Test Ground[/b] > [b]Run the fixed baseline (West Point)[/b] runs the full test there. That route changes the save you are in, so use a copy.
+
+[h2]The full test route[/h2]
+Every run starts on South St in West Point on the vanilla map, so every save runs the same streets.
+[list]
+[*]a 60 s drive (chunk loading at driving speed)
+[*]a walk loop with real Walk To pathfinding
+[*]a small and a large zombie fight
+[*]looting six containers in one house
+[*]a drive back, and a drive along a tree-lined road
+[*]a real car down the Dixie Highway at 120 km/h
+[*]a fight where you swing yourself
+[*]500 zombies crowding round you
+[*]the first drive again in fog
+[/list]
+Two research plans (shooting and aim sweep) are also included. They aren't part of the normal tests.
+
+[h2]Good to know[/h2]
+[list]
+[*][b]Singleplayer only.[/b] It does nothing on a server.
+[*][b]Vanilla map.[/b] The start and the routes are on the vanilla map. Map mods that change those streets make the fast drive and tree road fall back to shorter roads.
+[*][b]Can't die mode.[/b] Outside debug mode the game doesn't allow god mode from Lua, so the fights restore your health every tick instead. Launch with -debug for real god mode.
+[*][b]Other mods' welcome pop-ups[/b] that open in the first seconds after loading are closed by the test, and the trace lists what it closed.
+[*]A run changes the save it runs in: it teleports you, spawns and removes zombies and parked cars on the fast-drive road, and changes time and weather. Benchmark Save runs in a copy for that reason.
+[*]Plans are plain text in [i]Zomboid\Lua\[/i]; you can write your own.
+[/list]
+
+[h2]Hands-free runs: the flag file[/h2]
+For unattended runs PZ Harness contains a small engine that does [b]nothing at all[/b] unless you create [i]Zomboid\Lua\TestGround_autorun.txt[/i]. If that file exists and names a save, then on the next start of the main menu the game loads that save, runs the named plan, writes a result file and quits to the desktop. It can also create a new vanilla save, and temporarily add mods to the named save's mod list (taken off again at the next main menu). It runs no Lua from the file: it only reads settings such as the save, plan and timeouts. Don't create that file unless you want that, and use it only on test copies.
+
+[h2]Scripted runs, AI agents and auto-queue[/h2]
+The [b]PZ Harness Dev Add-on[/b], a separate item, adds a command-file bridge for scripts and AI agents, a Claude skill for building test cases, and guides. A PowerShell auto-queue script for queuing runs lives in the project's GitHub repository and is not part of this item: [url=https://github.com/galaxy321/pz-harness]https://github.com/galaxy321/pz-harness[/url]
+
+[h2]Skills and guides in this item[/h2]
+Files, not game content: in the mod's folder under [i]steamapps\workshop\content\108600\<this item's id>\mods\TestGround\[/i] you'll find [i]agent-skill\[/i] (Claude skills: run a benchmark, read a report, add a test step to your own mod), [i]guides\quick-start.md[/i] and [i]tools\compare.py[/i], which compares two reports.

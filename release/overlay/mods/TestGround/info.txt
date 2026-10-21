@@ -1,0 +1,3 @@
+name=PZ Harness
+description=Performance test bench for singleplayer on the vanilla map. In the main menu, Benchmark Save runs a fixed, scripted test (a 5-minute quick test or a 15-minute full test: driving, walking, fights, looting, a tree-lined road, a fast drive and a 500-zombie crowd) in a throwaway copy of a save, and writes frame times (fps, p95, p99, hitches) and per-step costs to Zomboid/Lua/ so two mod setups can be compared. Also: right-click the ground > Test Ground. A run teleports you, spawns and removes zombies and changes time and weather in the save it runs in, so only ever run it in a copy.
+versionMin=42.20.0

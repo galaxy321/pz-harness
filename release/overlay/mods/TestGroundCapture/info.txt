@@ -1,0 +1,3 @@
+name=PZ Harness: Capture (needs ZombieBuddy)
+description=Optional submod of PZ Harness. Lets Benchmark Save copy one of your saves so the test runs in a throwaway copy (without it, only "New vanilla save" works). It also takes test screenshots without the game window on screen and can film a run to JPEG frames. Needs PZ Harness and ZombieBuddy; ZombieBuddy asks once to allow its unsigned jar.
+versionMin=42.20.0

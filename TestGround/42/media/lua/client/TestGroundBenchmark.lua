@@ -1,4 +1,4 @@
--- Test Ground Autorun 1.5.21: "Benchmark Save" on the main menu. A button opens a window with your saves
+-- Test Ground 1.13.43 (Autorun engine 1.5.22; moved here from the Autorun mod): "Benchmark Save" on the main menu. A button opens a window with your saves
 -- and "New vanilla save". The run happens in a throwaway copy (made by Test Ground Capture's copySave),
 -- or in a new vanilla save, never in the save you chose; the copy is deleted the next time the main
 -- menu shows. The report and the end screen name the save you chose. The fixed baseline plan runs.
@@ -188,8 +188,14 @@ local function flagLines(win, save, mode, origin, plan)
 	plan = plan or "baseline"
 	local lines = { "save = " .. save, "mode = " .. mode, "origin = " .. string.gsub(origin, "#", "_") }
 	-- the copy keeps the original's mod list, which may lack the test mods: they are added to the copy's list
+	-- 1.13.43: Test Ground alone is enough; the other test mods are added to the copy's list only when they are installed
+	-- (a missing one stops the load), so a PC with Bridge, Autorun and Capture keeps them in the copy as before
+	local mods = { "TestGround" }
+	for _, id in ipairs({ "TestGroundBridge", "TestGroundAutorun", "TestGroundCapture" }) do
+		if A.modId(id) then mods[#mods + 1] = id end
+	end
 	for _, l in ipairs({ "plan = " .. plan, "timeout = " .. (plan == "quick" and 600 or 1500), "start = westpoint", "quit = 0", "endscreen = 1", "delay = 20",
-		"addmods = TestGround,TestGroundBridge,TestGroundAutorun,TestGroundCapture" }) do lines[#lines + 1] = l end
+		"addmods = " .. table.concat(mods, ",") }) do lines[#lines + 1] = l end
 	return lines
 end
 
@@ -229,7 +235,7 @@ function TestGroundBenchWindow:onStart(plan)
 		return self:begin(lines)
 	end
 	if not (TGCapture and TGCapture.copySaveStart) then
-		self.note = "Test Ground Capture 1.0.7 is needed to copy a save (it isn't loaded)."
+		self.note = "Copying a save needs the Test Ground Capture mod (1.0.7 or later); it isn't loaded. \"New vanilla save\" works without it."
 		return
 	end
 	local copy = string.gsub(A.BENCH_PREFIX .. cut(pick.name, 40) .. " " .. stamp, "#", "_")

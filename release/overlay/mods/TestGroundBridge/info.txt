@@ -1,0 +1,3 @@
+name=PZ Harness: Bridge (dev add-on)
+description=Dev add-on for PZ Harness: lets a script or an AI coding agent drive PZ Harness from outside the game through a command file. Its lua command, which runs any Lua you write to that file, is off by default and works only with -debug or the sandbox option. Read the security note on the Steam page before enabling anything. Ships a Claude skill and guides in its agent-skill and guides folders.
+versionMin=42.20.0

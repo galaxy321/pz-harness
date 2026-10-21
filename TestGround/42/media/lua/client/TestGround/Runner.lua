@@ -440,7 +440,7 @@ local function endStep(r, t)
 end
 
 -- The run in a few numbers (1.13.20): for the end of the report and the end screen. The save is named
--- both ways: the one the user chose (T.sourceSave, set by Autorun's Benchmark Save) and the one the run
+-- both ways: the one the user chose (T.sourceSave, set by the Benchmark Save button's job in TestGroundAutorun.lua, which is part of this mod since 1.13.43) and the one the run
 -- really happened in (a throwaway copy of it).
 function K.runSummary(r, why)
 	local sum = { rows = {}, label = r.plan.label, stopped = why }

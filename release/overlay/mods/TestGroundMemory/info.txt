@@ -1,0 +1,3 @@
+name=PZ Harness: Memory (needs ZombieBuddy)
+description=Optional submod of PZ Harness. Adds a memory line under every test step: the game's RAM and its peak, the Java heap against its maximum, free system RAM, and free VRAM on NVIDIA and AMD cards. Needs PZ Harness and ZombieBuddy; ZombieBuddy asks once to allow its unsigned jar. Leave it off if you don't want that.
+versionMin=42.20.0
