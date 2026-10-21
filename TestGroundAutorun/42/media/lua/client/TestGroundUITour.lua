@@ -91,7 +91,7 @@ V.MENU = {
 	{ name = "menu_button/normal", expect = "a 'Benchmark Save' button at the bottom left of the main menu, label whole and centred",
 		open = function() local ms = MainScreen and MainScreen.instance; return ms and ms.testGroundBenchBtn or nil end,
 		check = function(btn) return U.checkControl("menu_button/normal", btn) end, close = function() end, noArm = true },
-	{ name = "picker/long_names", expect = "window centred; title top left; two intro lines; list of 31 rows, long names end in '...' with the mode in brackets visible; footer lines between list and buttons; three buttons in one row at the bottom, every label whole, none overlapping",
+	{ name = "picker/long_names", expect = "window centred; title top left; two intro lines; list of 31 rows, long names end in '...' with the mode in brackets visible; footer lines between list and buttons; three buttons in one row at the bottom, every label whole, none overlapping; without the Save Copier mod loaded, a red note of two lines between the footer and the buttons (copying needs the Test Ground Save Copier mod and ZombieBuddy; 'New vanilla save' works without it), whole and inside the window; with it loaded, no note",
 		open = function() A.benchFixtureRows = V.pickerRows(); return A.showBenchWindow and A.showBenchWindow() end,
 		needs = { { "getTextManager", "MeasureStringX" }, { "getTextManager", "getFontHeight" }, { "getFullSaveDirectoryTable" } },
 		close = function() end },   -- stays open for the next state

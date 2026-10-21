@@ -1,0 +1,8 @@
+name=Test Ground Save Copier (ZombieBuddy)
+id=TestGroundSaveCopy
+description=Test Ground submod. Copies a save folder on its own thread so Test Ground's Benchmark Save button can run a test on a throwaway copy and never open your save. The copy is refused over 20 GB or when the disk would be left with under 512 MB; it never touches the original. Needs ZombieBuddy. Test Ground works without it: the picker then says copying needs this mod, and "New vanilla save" still works.
+modversion=1.0.1
+versionMin=42.0.0
+require=ZombieBuddy
+javaJarFile=media/java/tgsavecopy.jar
+javaPkgName=pzmod.tgsavecopy

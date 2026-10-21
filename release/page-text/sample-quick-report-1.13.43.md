@@ -1,0 +1,60 @@
+# Test Ground 1.13.43 report: quick (1792541459)
+
+- **plan:** 5 steps x 1, settle 20 s, start 11501,6949,0 (West Point, South St, fixed test start)
+- **scene:** time 12, weather clear, zombies none, god COULD NOT be turned on
+- **zombie intensity at the start:** 0.08 (the map's own spawn density, 0 to 1)
+- **zoom:** 1.00 at the start, kept at the maximum 2.00 during the run
+
+<details><summary>224 mods active (click to list)</summary>
+
+1VCESTANDARD, 49powerWagon, 59meteor, 62daimlerFerret, 63Type2Van, 63beetle, 65banshee, 66pontiacLeMans, 67commando, 67gt500, 68firebird, 69camaro, 69charger, 69fordMustang, 69fordMustangExtra, 69mini, 69mini_ItalianJob, 69mini_MrBean, 69mini_PitbullSpecial, 70barracuda, 70chevelle, 70dodge, 70fordEscort, 70roadRunner, 73fordFalcon, 73fordFalconPS, 73nissanGTR, 75grandPrix, 76chevyKseries, 76chevyKseriesExpanded, 76chryslerNewYorker, 77firebird, 78amgeneralM35A2, 78amgeneralM35A2extra, 78amgeneralM49A2C, 78amgeneralM50A3, 78amgeneralM62, 78lamboCountach, 79camaro, 80manKat1, 81deloreanDMC12, 81deloreanDMC12BTTF, 82firebird, 82firebirdKITT, 82jeepJ10, 82jeepJ10t, 82oshkoshM911, 82porsche911, 83amgeneralM923, 83amgeneralM923extra, 83gmcGseriesVans, 83gmcVanduraATeam, 84buickElectra, 84cadillacDeVille, 84corvette, 84gageV300, 84jeepXJ, 84merc, 84oldsmobile98, 85buickLeSabre, 85chevyCaprice, 85chevyStepVan, 85chevyStepVanexpanded, 85oldsmobileDelta88, 85pontiacParisienne, 86chevyCUCV, 86fordE150, 86fordE150dnd, 86fordE150expanded, 86fordE150mm, 86fordE150pd, 86oshkoshP19A, 87buickRegal, 87chevySuburban, 87fordB700, 87toyotaCorolla, 87toyotaMR2, 88chevyS10, 88toyotaHilux, 89defender, 89dodgeCaravan, 89fordBronco, 89trooper, 89volvo200, 90bmwE30, 90fordF350ambulance, 90pierceArrow, 91fordLTD, 91fordRanger, 91geoMetro, 91lexusLS400, 91nissan240sx, 91range, 92amgeneralM998, 92amgeneralM998extra, 92fordCVPI, 92jeepYJ, 92jeepYJJP18, 92nissanGTR, 92vwGolfMk2, 93chevySuburban, 93chevySuburbanExpanded, 93fordElgin, 93fordF350, 93fordTaurus, 93mustangSSP, 93townCar, AMMS_Standalone, ATakeABathAndShowerDepthMap, AnimalPreload, AreaTasks, ArmorMakesSense, AttachmentsUI, AutoMechanics, B42PackMule, BetterBuildingPlus, BetterFireExtinguishers, BetterSortCC, BreakThatBoulder, CVI, ChunkLoadSieve, CleanUI, CoffeeFluidFix, CombatText, ContextMenuIconsCore, CraneMod, CyesPushDoors, DetailedDescriptionsForOccupationsAndTraits, DismantleAllAtOnce, DoorScanFix, ECTO1, EFTBP, EntityLoopFix, EquipmentUI_B42, EverythingHasAName, ExactMinuteClock, FWOBenchPressTreadmill, FWOFitnessWorkoutOverhaul, FittedBarricades, FittedSheets, GasPumpIndicator, GunsOfMarz, HitchFix, ImmersiveSnow, ItemArrange, ItemCondition_KingEJ, Ivmakk_ProjectCookExtensionNutrientsSorting, KI5GeneralFixes, KI5PerfPatch, KI5campers, KI5minifixes, KI5trailers, LGExtendedElectricity, LGExtendedPlumbing, LGMainsWater, LGRealisticPowerUsage, LKB42, LoadFix, LongTermPreservationExtended, LongTermPreservationExtendedVFX, MWPWeaponsB42, MoGArmySurplusGunNutLoot, ModLoadOrderSorter_b42, MoodleFramework, NVFramework, NamedSkillVHSTapes, NeatUI_Framework, Neat_Building, Neat_Crafting, NiksMilitaryStuff, OnanGenSet, OverTheShoulder, P4MedicalMeister, P4PickingMeister, P4TidyUpMeister, P4VideoMeister, PNV, PROJECTRVInterior42, PZTheMutants, PalmPilots, PeekAView, Project_Cook, Project_Cook_Pixel_Icon_Pack, ProximityInventory, PutItBack, QoLCompendium, RCStructureFramework, RadioTraders, RadioTraders_GOM, RealisticDash, ReloadAllMagazines, ResearchLabInternProfession, SMB_steps, SWMG, SandboxSettings, SimpleContextMenuIcons, SpecLoot, StarterLoadout42, StowInHands, TakeABathAndShowerNew, TestGround, TestGroundCapture, TheShortcut, ThisIsYourLife, TracerFix, Tuna_EquipmentRacks, Tuna_GunRacks, UIThrottle, UsefulBarrelsMP, VSUIKI5, VVR, VanillaCraftableFoods, VanillaFoodsExpanded, WoundsOverhaul, YAPZLib, ZVirusVaccine42BETA, ZombieBuddy, ZombieVisibilityFix, ammomaker, coldwinters, damnlib, dustinguished_bolt_cutters, isoContainers, lgd_antibodies
+
+</details>
+
+**PZ Harness files:** TestGround 1.13.43 (Workshop: Workshop\PZHarness\Contents\mods\TestGround)  
+TestGroundBridge 1.1.0 (Workshop: Workshop\PZHarnessDevAddon\Contents\mods\TestGroundBridge)  
+TestGroundAutorun 1.5.22 (Workshop: Workshop\PZHarnessDevAddon\Contents\mods\TestGroundAutorun)  
+TestGroundCapture 1.0.8 (Workshop: Workshop\PZHarness\Contents\mods\TestGroundCapture)  
+TestGroundMemory 1.0.0 (Workshop: Workshop\PZHarness\Contents\mods\TestGroundMemory)
+
+## Result
+
+- save tested: Lumberjack - Copy (this run happened in the throwaway copy C:\Users\tony6\Zomboid\Saves\Sandbox\Lumberjack - Copy - PerfTest)
+- plan quick, 5 steps measured, 248 s, 28274 frames: 113.9 fps, mean 8.8 ms, worst step p99 40 ms, worst frame 284 ms, 91 over 33 ms, 2 hitches (100 ms+)
+
+## Steps
+
+| Step | fps | mean ms | p95 | p99 | worst ms | over 33 ms | hitches (100 ms+) |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| Loot a container | 162.9 | 6.1 | 9 | 14 | 41 | 1 | 0 |
+| Glide south | 136.2 | 7.3 | 14 | 19 | 45 | 1 | 0 |
+| Fast drive on Dixie Highway | 110.3 | 9.1 | 17 | 24 | 193 | 13 | 1 |
+| Melee fight with a real swing | 135.7 | 7.4 | 10 | 15 | 284 | 3 | 1 |
+| Zombie stress, 500 zombies | 68.4 | 14.6 | 20 | 40 | 88 | 73 | 0 |
+
+### Loot a container
+
+pass 1 step 1: loot loot (30 s), 6 of 6 containers reached (0 by teleport), 20 items seen, 16 moved out and back
+
+### Glide south
+
+pass 1 step 2: drive 40 20 glide_south (41 s), 815 tiles at 20 tiles/s, 400 out, back at the start
+
+### Fast drive on Dixie Highway
+
+pass 1 step 3: drivefast 90 120 drive_fast (87 s), Dixie Highway (Route 31W) (3600-tile road from the map, loaded in 1.1 s), real car Base.SportsCar, 1 legs, 1632 tiles, peak 36.0 tiles/s (130 km/h at 1 tile = 1 m), dashboard peak 120 km/h, cruise 120 km/h, top speed REACHED (1 of 1 legs at 95%+ of 130 km/h), 0 steering nudges, 44 vehicles cleared off the road, 0 corners, 0 turned back, 0 fresh cars after getting stuck, 6 bends taken on the move, 5 times steered back from the edge, up to 3.1 tiles off the street's centre (on average 0.15 tiles to its left; over a tile left 11 s, right 4 s), 26 late-loaded vehicles cleared, 0 removed again, 3 wreck jams crawled at 25 km/h (19 s, 136 tiles), torque steering on 6277 ticks (peak push 207, cap 400, gain 0.5, 0 spins, 0 knocks)
+
+> drive: left the street 0 times, 5 steered back from the edge, 0 legs cut short, 0 fresh cars, 0 tries on the same car, 0 knocks, 3 wreck jams, 1632 tiles in the car, no fallback; average 68 km/h from the first car to the end (87 s, fresh cars, tries and stops included), 72 km/h in the legs (82 s), 75 km/h while moving; tuning 1.13.19
+
+### Melee fight with a real swing
+
+pass 1 step 4: realfight 6 30 weapon=Base.BaseballBat fight_swing (30 s), 6 spawned, 23 swings (Base.BaseballBat (Baseball Bat) via AttemptAttack, 1315 frames in an attack animation, 0 stuck attacks cleared), 4 killed by you, 2 down in all (1 of them put down by script to keep at most 2 at arm's length), 4 still standing (removed); can't-die mode held (4074 heals); 23 swings started (OnWeaponSwing: 7 shoves, 9 at the floor), 20 hits landed (mean damage 1.14 standing over 12, 3.90 downed over 8); weapon band 0.66 to 1.15 tiles (MinRange 0.61, reach 1.25), stepped back 35 times, shoved off 0 times when too close; 6 downed zombies attacked from the head end (floor hits by damage: 4 head, 2 body, 0 legs, 2 unjudged; moved to the other end 0 times); category Swinging; not cleared; weapon condition 15/15 before, 14/15 after; strength 5, arms ok; hits taken 0, downed 0 times, guard fired: no
+
+### Zombie stress, 500 zombies
+
+pass 1 step 5: stress 500 60 stress_500 (60 s), 500 of 500 spawned (in 0.7 s), up to 500 alive and 50 seen at once, 255 still up at the end; can't-die mode held (4103 heals); 269 removed, 234 bodies cleared
+
+## Notes
+
+- detail: pzopt marks for 5 steps in Zomboid/Lua/TestGround_quick_1792541459_marks.txt (pzopt found: PzoptOptionClasses is set; getTimestampMs, the epoch-ms clock of pzopt-lua.out, which counts per second: use the whole seconds inside each step; the same lines on the console as [TestGround] mark ...)
+- run summary:

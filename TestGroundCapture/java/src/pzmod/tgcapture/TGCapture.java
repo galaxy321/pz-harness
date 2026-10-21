@@ -33,9 +33,10 @@ import me.zed_0xff.zombie_buddy.Exposer;
 // 1.0.5: filmStop no longer waits: the render thread flushes at its next frame and the writers finish
 // on their own threads (a watchdog ends the film after 2 s without a render frame). A filmStart
 // while the last film is still stopping is refused (filmStatus says so); Lua tries again later.
+// 1.0.9: the save copy (copySaveStart/copySaveStatus) moved to its own mod, Test Ground Save Copier (TGSaveCopy).
 @Exposer.LuaClass
 public class TGCapture {
-    public static final String VERSION = "1.0.8";
+    public static final String VERSION = "1.0.9";
 
     public static String version() { return VERSION; }
     public static boolean request(String name, String mode) { return Capture.request(name, mode); }
@@ -60,17 +61,6 @@ public class TGCapture {
     public static boolean filmAlive() { return Film.alive(); }
     public static double filmMaxMinutes(double minutes) { return Film.maxMinutes(minutes); }
     /**
-     * Start a copy of Saves/<mode>/<src> to Saves/<mode>/<dst> on its own thread (1.0.7, Benchmark Save).
-     * "" when it has started, else why not; then poll copySaveStatus(): copying N of M MB, done, or failed: why.
-     */
-    public static String copySaveStart(String mode, String src, String dst) {
-        try {
-            return SaveCopy.start(java.nio.file.Paths.get(zombie.ZomboidFileSystem.instance.getSaveDir()), mode, src, dst);
-        } catch (Throwable t) {
-            return "copy failed: " + t;
-        }
-    }
-    /**
      * 1.0.8: aim the player's ranged weapon at the screen point (x, y) in the game's mouse coordinates (what
      * Mouse.getXA/getYA give: the screen's pixels, not multiplied by the zoom). Lua calls it every tick while it
      * wants the aim; the point goes stale after 500 ms. The game's setMouseXY does not move the cursor while the window
@@ -79,6 +69,5 @@ public class TGCapture {
     public static void aimAt(double player, double x, double y) { Aim.set((int) Math.round(player), (int) Math.round(x), (int) Math.round(y)); }
     public static void aimClear() { Aim.clear(); }
     public static String aimStatus() { return Aim.status(); }
-    public static String copySaveStatus() { return SaveCopy.status(); }
     public static double filmQuality(double q) { return Film.quality(q); }
 }

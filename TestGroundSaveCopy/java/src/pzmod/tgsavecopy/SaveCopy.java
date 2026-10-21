@@ -1,4 +1,4 @@
-package pzmod.tgcapture;
+package pzmod.tgsavecopy;
 
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
@@ -12,7 +12,7 @@ import java.util.Locale;
 import java.util.Set;
 
 /**
- * Benchmark Save (Test Ground Autorun 1.5.0): a copy of a save folder, so the run happens on a
+ * Benchmark Save (Test Ground Autorun 1.5.0; moved here from Test Ground Capture in 1.13.44): a copy of a save folder, so the run happens on a
  * throwaway copy and the original is never opened. Lua can only read and write inside Zomboid/Lua,
  * and the game's own copy (IngameState.copyWorld, used when it converts an old save) is not
  * reachable from Lua, so the copy is made here, on its own daemon thread (1.0.7: a big save no longer
@@ -62,7 +62,7 @@ final class SaveCopy {
         total = 0;
         copied = 0;
         state = "copying";
-        worker = new Thread(() -> run(base, from, to), "TestGroundCapture save copy");
+        worker = new Thread(() -> run(base, from, to), "TestGroundSaveCopy save copy");
         worker.setDaemon(true);
         worker.start();
         return "";

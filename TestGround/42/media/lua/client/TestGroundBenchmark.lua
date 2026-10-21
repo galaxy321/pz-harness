@@ -1,5 +1,5 @@
--- Test Ground 1.13.43 (Autorun engine 1.5.22; moved here from the Autorun mod): "Benchmark Save" on the main menu. A button opens a window with your saves
--- and "New vanilla save". The run happens in a throwaway copy (made by Test Ground Capture's copySave),
+-- Test Ground 1.13.46 (Autorun engine 1.5.24; moved here from the Autorun mod): "Benchmark Save" on the main menu. A button opens a window with your saves
+-- and "New vanilla save". The run happens in a throwaway copy (made by the Test Ground Save Copier mod's TGSaveCopy),
 -- or in a new vanilla save, never in the save you chose; the copy is deleted the next time the main
 -- menu shows. The report and the end screen name the save you chose. The fixed baseline plan runs.
 require "ISUI/ISPanel"
@@ -89,6 +89,9 @@ local function wrapText(text, width)
 	return lines
 end
 
+local NOTE_LINES = 2
+local COPIER_NOTE = "Copying a save needs the Test Ground Save Copier mod (and ZombieBuddy); it isn't loaded. \"New vanilla save\" works without it."
+
 -- 1.5.8: a button is as wide as its label (measured) plus padding; the window widens to hold all three
 local BTN_FULL, BTN_QUICK, BTN_CANCEL = "Start full benchmark (about 15 min)", "Quick test (about 5 min)", "Cancel"
 local function btnW(text)
@@ -120,7 +123,8 @@ function TestGroundBenchWindow:createChildren()
 	self.footer = wrapText("The copy is deleted the next time this menu shows. The full test takes about 15 minutes, the quick one about 5; the results show at the end.", self.width - 40)
 	self.intro = wrapText("Pick a save to test. The run happens in a throwaway copy of it; your save is not opened.", self.width - 40)
 	local top = introTop() + fh * #self.intro + 12
-	self.list = ISScrollingListBox:new(20, top, self.width - 40, self.height - 80 - fh * (#self.footer + 1) - top)
+	-- 1.13.46: two lines are kept for the note (the "needs the Save Copier" one is two lines at 2560x1440)
+	self.list = ISScrollingListBox:new(20, top, self.width - 40, self.height - 80 - fh * (#self.footer + NOTE_LINES) - top)
 	self.list:initialise(); self.list:instantiate()
 	self.list.itemheight = fh + 14
 	self.list.font = UIFont.Small
@@ -161,6 +165,8 @@ function TestGroundBenchWindow:createChildren()
 	self.quickBtn:initialise(); self.quickBtn:instantiate(); self:addChild(self.quickBtn)
 	self.cancelBtn = ISButton:new(self.width - bwC - 20, y, bwC, bh, BTN_CANCEL, self, TestGroundBenchWindow.onCancel)
 	self.cancelBtn:initialise(); self.cancelBtn:instantiate(); self:addChild(self.cancelBtn)
+	-- 1.13.46 (1.13.45 PC tour: the note only showed after a start press, which the tour cannot make): said as soon as the window opens
+	if not (TGSaveCopy and TGSaveCopy.copyStart) then self.note = COPIER_NOTE end
 end
 
 function TestGroundBenchWindow:onCancel() self:setVisible(false); self:removeFromUIManager(); A.benchWindow = nil end
@@ -169,12 +175,13 @@ function TestGroundBenchWindow:render()
 	self:drawText("Benchmark Save", 20, 12, 1, 1, 1, 1, UIFont.Medium)
 	for i, l in ipairs(self.intro or {}) do self:drawText(l, 20, introTop() + (i - 1) * (self.fh or 14), 0.75, 0.75, 0.75, 1, UIFont.Small) end
 	local fh = self.fh or 14
-	local y = self.height - 56 - fh * (#(self.footer or {}) + 1)
+	local y = self.height - 56 - fh * (#(self.footer or {}) + NOTE_LINES)
 	for _, l in ipairs(self.footer or {}) do
 		self:drawText(l, 20, y, 0.75, 0.75, 0.75, 1, UIFont.Small)
 		y = y + fh
 	end
-	if self.note ~= "" then self:drawText(self.note, 20, y + 2, 0.95, 0.5, 0.4, 1, UIFont.Small) end
+	if self.noteFor ~= self.note then self.noteFor, self.noteLines = self.note, wrapText(self.note, self.width - 40) end
+	for i = 1, math.min(NOTE_LINES, #self.noteLines) do self:drawText(self.noteLines[i], 20, y + 2 + (i - 1) * fh, 0.95, 0.5, 0.4, 1, UIFont.Small) end
 end
 
 local function cut(name, n)   -- at most n bytes, never inside a multi-byte character
@@ -234,12 +241,13 @@ function TestGroundBenchWindow:onStart(plan)
 		table.insert(lines, 1, "newsave = " .. name)
 		return self:begin(lines)
 	end
-	if not (TGCapture and TGCapture.copySaveStart) then
-		self.note = "Copying a save needs the Test Ground Capture mod (1.0.7 or later); it isn't loaded. \"New vanilla save\" works without it."
+	-- 1.13.44: the copy is the Test Ground Save Copier mod (it needs ZombieBuddy); the vanilla save needs neither
+	if not (TGSaveCopy and TGSaveCopy.copyStart) then
+		self.note = COPIER_NOTE
 		return
 	end
 	local copy = string.gsub(A.BENCH_PREFIX .. cut(pick.name, 40) .. " " .. stamp, "#", "_")
-	local okC, err = pcall(function() return TGCapture.copySaveStart(pick.mode, pick.name, copy) end)
+	local okC, err = pcall(function() return TGSaveCopy.copyStart(pick.mode, pick.name, copy) end)
 	if not okC or (err ~= nil and err ~= "") then
 		self.note = "Could not copy: " .. tostring(err)
 		say("copy not started: " .. tostring(err))
@@ -258,7 +266,7 @@ function TestGroundBenchWindow:prerender()
 	local c = self.copying
 	if not c or getTimestampMs() < c.nextPoll then return end
 	c.nextPoll = getTimestampMs() + 300
-	local ok, st = pcall(function() return TGCapture.copySaveStatus() end)
+	local ok, st = pcall(function() return TGSaveCopy.copyStatus() end)
 	st = ok and tostring(st) or "failed: status unreadable"
 	if st == "done" then
 		say("copy done")

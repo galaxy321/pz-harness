@@ -1,6 +1,6 @@
 name=Test Ground Autorun (dev tool)
 id=TestGroundAutorun
 description=Dev tool. Since Test Ground 1.13.43 the flag-file engine and the Benchmark Save menu button are part of the Test Ground mod itself; this mod keeps the UI check and the UI tour. The engine does nothing unless Zomboid/Lua/TestGround_autorun.txt names a save. Then it loads that save from the main menu, runs a Test Ground plan in it, writes Zomboid/Lua/TestGround_autorun_done.txt and quits to desktop. With newsave = <name> it makes a fresh Sandbox save first (vanilla, or with the mods the flag names). Needs Test Ground in the save. Enable it in the main menu's mod list and in the test save's mod list.
-modversion=1.5.22
+modversion=1.5.24
 require=\TestGround,\TestGroundBridge
 versionMin=42.0.0

@@ -1,7 +1,7 @@
 -- Test Ground: the entry file. Since 1.13.0 the code is split by test group under TestGround/
 -- (TestGround/Core, Runner, Survey and Tests/*); this file loads them in order and holds the
 -- menu, the bridge commands and the event hooks.
-local VERSION = "1.13.43"   -- the same as in TestGround/Core.lua (the release build reads it here)
+local VERSION = "1.13.46"   -- the same as in TestGround/Core.lua (the release build reads it here)
 require "TestGround/Core"
 require "TestGround/Tests/Idle"
 require "TestGround/Tests/Drive"

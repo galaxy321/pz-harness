@@ -12,7 +12,7 @@ More detail is in the files next to this one:
 - `references/b42-lua-gotchas.md`: Build 42 Lua traps found in real runs. Read it before writing any Lua for the game.
 
 ## Setup (check once)
-- The person needs **Test Ground** and **Test Ground Bridge** enabled in the test save's mod list. Lua Event Profiler is optional (it adds Lua cost per mod to the reports).
+- The person needs **PZ Harness** (mod id `TestGround`) and the Dev Add-on's **Bridge** (`TestGroundBridge`) enabled in the test save's mod list. Lua Event Profiler is optional (it adds Lua cost per mod to the reports).
 - The game's user folder is `%USERPROFILE%\Zomboid` on Windows and `~/Zomboid` on Linux and macOS. Under WSL that is `/mnt/c/Users/<name>/Zomboid`. Every file here is in its `Lua` folder, written `Lua/` below. Lua can only read and write files there.
 - Ask for the path if you can't find the folder. Don't guess it.
 
@@ -51,9 +51,9 @@ last report TestGround_baseline_1792181710.txt
 
 ## The loop
 1. `status`. This confirms the game is loaded and unpaused.
-2. For a general check, `baseline` runs the standard route, the same steps on every machine. For a specific mod, find a site: `survey 40`, then read `TestGround_site.txt`. It lists walls, fences, doors (locked or barricaded), ladders, the longest street and anything a mod's finder adds, nearest first.
+2. For a general check, `baseline` runs the standard route (`baseline quick` the 5-minute one), the same steps on every machine; a quick report only compares with another quick report. For a specific mod, find a site: `survey 40`, then read `TestGround_site.txt`. It lists walls, fences, doors (locked or barricaded), ladders, the longest street and anything a mod's finder adds, nearest first.
 3. Write a plan for what you are testing (see `references/plan-format.md`) to `Lua/TestGround_<name>.txt` and send `run TestGround_<name>.txt`.
-4. Wait for `=== done`. A baseline takes about 15 minutes, so check back every minute or so rather than polling fast. Then read the report and the trace.
+4. Wait for `=== done`. A full baseline takes 15 to 20 minutes (`baseline quick` about 5), so check back every minute or so rather than polling fast. Then read the report and the trace.
 5. Compare two runs with `python3 compare.py A.txt B.txt` (shipped next to this skill in Test Ground Bridge's `tools/` folder). It prints fps, p99, hitches and Lua ms/s per step, the mods whose cost moved most, mods that were on in only one run, and Walk To outcomes that changed.
 
 ## Choosing steps
@@ -62,6 +62,7 @@ last report TestGround_baseline_1792181710.txt
 - Timers that fire every 10 in-game minutes: `wait 120 3` (x20 speed). Read the hitch count and the worst frame, not the average.
 - Pathfinding and movement mods: one `walkto` case per feature from the site list, with `expect` set to what the mod promises.
 - Zombie AI and crowds: `fight`, `realfight`, `stress`, or `natural` for the game's own zombies.
+- Setup steps (`corpses` and its clean-up, `weather`) prepare the scene; don't read them as game performance. `mod:*` steps (such as `mod:drive`, `mod:look`) come from the test's own table; run them from the shipped plans.
 - Anything else: add a step kind from the mod under test (below).
 
 ## Adding a test to your own mod
@@ -93,6 +94,7 @@ TestGround.addFinder("mymod_spot",
 - Other functions: `TestGround.isRunning()`, `TestGround.start(plan)`.
 
 ## Reading a report
+Reports show step display names; the old ids (`drive_fast`, `glide_fog`) are still what plan `skip` lines and `compare.py` key on. The PZ Harness item also ships a `pz-read-test-report` skill; use it when it is installed instead of this section.
 - `frames:`: fps and p50 are how it feels. p99, worst and `hitches` (100 ms+ frames) are the stutter. Patches that fix stutter show in hitches and worst, not in fps.
 - `Lua in handlers` and `by mod` need Lua Event Profiler, and cover only what it wraps: event handlers, mod UI render and update, and vehicle scripts. Engine time is not in them.
 - `stream`, `drive` and `treeroad` glide the player in ghost mode: chunk loading is real, but there are no vehicle physics. `drivefast` drives a real car. A result starting `FALLBACK` glided instead and says why.

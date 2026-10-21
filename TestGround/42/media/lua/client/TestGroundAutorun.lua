@@ -21,7 +21,7 @@
 --   origin = My Save         # 1.5.0: the save the user chose; Test Ground names it in the report and on the end screen
 --   endscreen = 1            # 1.5.0: show Test Ground's end screen (results and a closing countdown) after the run
 --   (Benchmark Save, TestGroundBenchmark.lua: a main-menu button that copies a save, writes this flag for the copy
---   and deletes the copy at the next menu; needs Test Ground Capture 1.0.7 for the copy)
+--   and deletes the copy at the next menu; needs the Test Ground Save Copier mod for the copy)
 --   skip = fight_small,fight_large   # phases (or step kinds) Test Ground leaves out; the report says "skipped by flag"
 --   viewpoint = first | third        # 1.4.5: Test Ground 1.13.3+ switches Project Viewpoint to that view for the run
 --   start = westpoint        # where the run happens: Test Ground's fixed test start (the default), the
@@ -69,7 +69,7 @@ if TestGroundAutorun then return end
 TestGroundAutorun = {}
 local A = TestGroundAutorun
 
-local VERSION = "1.5.22"
+local VERSION = "1.5.24"
 A.VERSION = VERSION
 local FLAG = "TestGround_autorun.txt"
 local DONE = "TestGround_autorun_done.txt"

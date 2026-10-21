@@ -284,7 +284,10 @@ local function header(r)
 	-- 1.13.23: which copy of each Test Ground mod ran (Workshop or the mods folder), so a release check can prove it
 	do
 		local parts = {}
-		for _, id in ipairs({ "TestGround", "TestGroundBridge", "TestGroundAutorun", "TestGroundCapture", "TestGroundMemory" }) do
+		-- 1.13.44: "loaded" or "installed, not loaded" (the console of a PC run showed Bridge listed that was not loaded)
+		local loadedIds = {}
+		for _, mid in ipairs(activeMods()) do loadedIds[string.gsub(tostring(mid), "^\\", "")] = true end
+		for _, id in ipairs({ "TestGround", "TestGroundBridge", "TestGroundAutorun", "TestGroundCapture", "TestGroundSaveCopy", "TestGroundMemory" }) do
 			local ver, dir = nil, nil
 			pcall(function()
 				local mi = getModInfoByID(id)
@@ -297,7 +300,7 @@ local function header(r)
 				local where = (string.find(dir, "108600", 1, true) or string.find(string.lower(dir), "workshop", 1, true)) and "Workshop" or "mods folder"
 				-- 1.13.24: the path starts after the Zomboid or Workshop root (the part before has the Windows user name)
 				local short = string.match(dir, "[Zz]omboid[/\\](.*)$") or string.match(dir, "108600[/\\](.*)$") or string.match(dir, "([^/\\]+[/\\][^/\\]+)$") or dir
-				parts[#parts + 1] = id .. " " .. (ver and ver ~= "nil" and ver ~= "" and ver or "?") .. " (" .. where .. ": " .. short .. ")"
+				parts[#parts + 1] = id .. " " .. (ver and ver ~= "nil" and ver ~= "" and ver or "?") .. " (" .. where .. ": " .. short .. "; " .. (loadedIds[id] and "loaded" or "installed, not loaded") .. ")"
 			end
 		end
 		out("test ground files: " .. (#parts > 0 and table.concat(parts, "; ") or "no Test Ground mod info found"))
@@ -442,6 +445,108 @@ end
 -- The run in a few numbers (1.13.20): for the end of the report and the end screen. The save is named
 -- both ways: the one the user chose (T.sourceSave, set by the Benchmark Save button's job in TestGroundAutorun.lua, which is part of this mod since 1.13.43) and the one the run
 -- really happened in (a throwaway copy of it).
+-- 1.13.45 (the user: the .txt report is hard to read): a readable Markdown copy of the report, written next to the .txt with the
+-- same base name (the .txt is unchanged). Layout from the Steam thread's report2md.py: title, plan and scene summary, the mod list
+-- collapsed, the result, a per-step table, per-step detail lines and the closing notes. Built from the report's own lines.
+local function mdText(s) return (string.gsub(string.gsub(s, "&", "&amp;"), "<", "&lt;")) end
+K.MD_EXTS = { ".md.txt", "_md.txt" }
+-- 1.13.46 (review of 1.13.45: the .md copied the "save tested" line with the PC's full path and Windows user name): the folders
+-- before the save's own name are left out of the readable copy (the .txt keeps them)
+function K.mdNoPath(s)
+	s = string.gsub(s, "%a:[\\/][^()]*[\\/]", "")
+	s = string.gsub(s, "([%s(])/[^()]*/", "%1")
+	return s
+end
+function K.reportMarkdown(lines)
+	local head, steps, tail, cur, mode = {}, {}, {}, nil, "head"
+	for _, l in ipairs(lines) do
+		if string.sub(l, 1, 3) == "== " then
+			cur = { title = string.sub(l, 4), name = "", frames = "", extra = {} }
+			steps[#steps + 1] = cur
+			mode = "step"
+		elseif mode == "step" and string.sub(l, 1, 7) == "detail:" then
+			mode = "tail"; tail[#tail + 1] = l
+		elseif mode == "step" and string.match(l, "%S") then
+			if string.sub(l, 1, 5) == "name:" then cur.name = string.match(string.sub(l, 6), "^%s*(.-)%s*$")
+			elseif string.sub(l, 1, 7) == "frames:" then cur.frames = string.match(string.sub(l, 8), "^%s*(.-)%s*$")
+			else cur.extra[#cur.extra + 1] = l end
+		elseif mode == "step" then
+			mode = "after"   -- the blank line ends a step; what follows it (before the next step) is a closing note
+		elseif mode == "head" then head[#head + 1] = l
+		elseif mode == "tail" or mode == "after" then
+			if string.match(l, "%S") then tail[#tail + 1] = l end
+		end
+	end
+	local kv = {}
+	for i = 2, #head do
+		local k, v = string.match(head[i], "^([%w ]-): (.*)$")
+		if k and kv[k] == nil then kv[k] = v end
+	end
+	local md = { "# " .. mdText(head[1] or "Test Ground report"), "" }
+	for _, k in ipairs({ "plan", "scene", "zombie intensity at the start", "zoom" }) do
+		if kv[k] then md[#md + 1] = "- **" .. k .. ":** " .. mdText(kv[k]) end
+	end
+	local mods = {}
+	for m in string.gmatch(kv.mods or "", "[^;]+") do mods[#mods + 1] = m end
+	md[#md + 1] = ""
+	md[#md + 1] = "<details><summary>" .. #mods .. " mods active (click to list)</summary>"
+	md[#md + 1] = ""
+	md[#md + 1] = mdText(table.concat(mods, ", "))
+	md[#md + 1] = ""
+	md[#md + 1] = "</details>"
+	md[#md + 1] = ""
+	if kv["test ground files"] then
+		local first = true
+		-- an entry ends with ")" and the next starts after "; " (an entry's own "; loaded" is inside its brackets)
+		local joined = string.gsub(kv["test ground files"], "%); ", ")\1")
+		for part in string.gmatch(joined, "[^\1]+") do
+			part = string.match(part, "^%s*(.-)%s*$")
+			md[#md + 1] = (first and "**PZ Harness files:** " or "") .. mdText(part) .. "  "
+			first = false
+		end
+		md[#md + 1] = ""
+	end
+	local summ, rest = {}, {}
+	for _, l in ipairs(tail) do
+		if string.sub(l, 1, 11) == "save tested" or string.sub(l, 1, 5) == "plan " then summ[#summ + 1] = l else rest[#rest + 1] = l end
+	end
+	if #summ > 0 then
+		md[#md + 1] = "## Result"
+		md[#md + 1] = ""
+		for _, l in ipairs(summ) do md[#md + 1] = "- " .. mdText(K.mdNoPath(l)) end
+		md[#md + 1] = ""
+	end
+	md[#md + 1] = "## Steps"
+	md[#md + 1] = ""
+	md[#md + 1] = "| Step | fps | mean ms | p95 | p99 | worst ms | over 33 ms | hitches (100 ms+) |"
+	md[#md + 1] = "|---|---:|---:|---:|---:|---:|---:|---:|"
+	for _, st in ipairs(steps) do
+		local f = st.frames
+		local function g(pat) return string.match(f, pat) or "-" end
+		local name = string.gsub(mdText(st.name ~= "" and st.name or st.title), "|", "\\|")
+		md[#md + 1] = string.format("| %s | %s | %s | %s | %s | %s | %s | %s |", name, g("([%d.]+) fps"), g("mean ([%d.]+)"),
+			g("p95 (%d+)"), g("p99 (%d+)"), g("worst (%d+)"), g("(%d+) over 33"), g("(%d+) hitches"))
+	end
+	md[#md + 1] = ""
+	for _, st in ipairs(steps) do
+		md[#md + 1] = "### " .. mdText(st.name ~= "" and st.name or st.title)
+		md[#md + 1] = ""
+		md[#md + 1] = mdText(st.title)
+		md[#md + 1] = ""
+		if #st.extra > 0 then
+			for _, e in ipairs(st.extra) do md[#md + 1] = "> " .. mdText(e) .. "  " end
+			md[#md + 1] = ""
+		end
+	end
+	if #rest > 0 then
+		md[#md + 1] = "## Notes"
+		md[#md + 1] = ""
+		for _, l in ipairs(rest) do md[#md + 1] = "- " .. mdText(l) end
+		md[#md + 1] = ""
+	end
+	return md
+end
+
 function K.runSummary(r, why)
 	local sum = { rows = {}, label = r.plan.label, stopped = why }
 	pcall(function() sum.copy = getCurrentSaveName() end)
@@ -516,12 +621,30 @@ local function finish(r, why)
 	end
 	save(base .. "_perf.txt", r.perf)
 	save(base .. "_spikes.txt", r.spikes)
+	-- 1.13.45: the readable copy; a failure here never loses the .txt report
+	-- 1.13.46 (1.13.45 PC run: "could not write ...md: attempted index: writeln of non-table: null" for every .md, while every
+	-- .txt was written): the game's file writer gives nothing for a .md name, so the copy is <base>.md.txt (Markdown inside;
+	-- rename it to .md to view it rendered), and <base>_md.txt if that is refused too
+	local okM, md = pcall(K.reportMarkdown, r.report)
+	local mdName
+	if okM then
+		for _, ext in ipairs(K.MD_EXTS) do
+			if writeLines(base .. ext, md, false) then
+				mdName = base .. ext
+				save("TestGround_report_latest" .. ext, md)
+				break
+			end
+		end
+		if not mdName then say("could not write the Markdown report (Zomboid/Lua/" .. base .. K.MD_EXTS[1] .. ") under any name") end
+	else
+		T.trace("markdown report failed: " .. tostring(md))
+	end
 	-- the same files under fixed names, so another tool can always read the last run
 	save("TestGround_report_latest.txt", r.report)
 	save("TestGround_perf_latest.txt", r.perf)
 	save("TestGround_spikes_latest.txt", r.spikes)
 	T.last = { report = base .. ".txt", trace = base .. "_trace.txt", perf = base .. "_perf.txt",
-		spikes = base .. "_spikes.txt", stopped = why }
+		spikes = base .. "_spikes.txt", markdown = mdName, stopped = why }
 	if T.onFinish then pcall(T.onFinish, T.last) end
 	if T.endScreen then pcall(T.endScreen, sum, r.plan) end
 	say("run finished" .. (why and (" (" .. why .. ")") or "") .. ", report " ..
@@ -821,6 +944,16 @@ function K.heartbeat()
 	local t = now()
 	K.filmAliveTick(r, t)
 	K.filmRetryTick(r, t)
+	if r.uiExtraWas and not r.uiScan2 and r.t0 and t - r.t0 >= 10000 then
+		r.uiScan2 = true
+		K.uiCornerScan(r, "10 s into the run")
+	end
+	if r.uiExtraWas and r.uiClockNext and t >= r.uiClockNext then
+		r.uiClockNext = t + 1000
+		local n0 = #r.uiClocks
+		K.uiClockScan(r)
+		if #r.uiClocks > n0 then T.trace("ui: a mod clock appeared during the run, hidden too: " .. table.concat(r.uiClockNames, ", ", n0 + 1)) end
+	end
 	if not K.hb.next then K.hb.next, K.hb.ticks = t + 10000, 0; return end
 	if t < K.hb.next then return end
 	K.hb.next = t + 10000
@@ -862,6 +995,81 @@ end
 -- frame): those have no title bar field or "Window" in their type, so ISInventoryPage (both pages) is
 -- named, and the Java clock (UIManager.getClock) is hidden and shown again like the rest.
 K.UI_HIDE_TYPES = { ISInventoryPage = true }
+K.UI_EXTRAS = {
+	{ name = "clock", get = function() return UIManager.getClock() end },
+	{ name = "speed controls", get = function() return UIManager.getSpeedControls() end },
+}
+-- 1.13.44 PC run: the clock and speed controls were hidden again 62 times and still drawn in the film, so the game (or a mod that
+-- changes the clock) shows them again between our checks. 1.13.45: they are hidden on every frame, just before the UI is drawn.
+-- 1.13.46 (1.13.45 PC run: the top right was clear, but a clock with date and temperature was drawn at the top left in every frame):
+-- the Exact Minute Clock mod's own element (ExactMinuteClock) sat on the Java clock at the start and was gone from the top right
+-- 10 s in, so it most likely follows the Java clock's position, which 1.13.45 moved to x = -10000 (inferred, not read from that
+-- mod). Nothing is moved any more; only visibility is changed. A mod's clock (a Lua element whose type has "Clock" in it) is
+-- hidden on every frame too, found at the start and looked for again once a second, since a mod can make a new one.
+function K.isModClock(el)
+	local ok, yes = pcall(function()
+		local tb = el:getTable()
+		local ty = tb and tostring(tb.Type or "") or ""
+		return string.find(string.lower(ty), "clock", 1, true) ~= nil and not string.find(ty, "TestGround", 1, true)
+	end)
+	return ok and yes
+end
+function K.uiClockScan(r)
+	pcall(function()
+		local list = UIManager.getUI()
+		for i = 0, list:size() - 1 do
+			local el = list:get(i)
+			if el and r.uiClockWas[el] == nil and K.isModClock(el) then
+				r.uiClockWas[el] = el:isVisible()
+				r.uiClocks[#r.uiClocks + 1] = el
+				r.uiClockNames[#r.uiClockNames + 1] = tostring(el:getTable().Type)
+			end
+		end
+	end)
+end
+function K.uiHideFrame()
+	local r = S.run
+	if not r or not r.uiExtraWas then return end
+	for _, ex in ipairs(K.UI_EXTRAS) do
+		pcall(function()
+			local el = ex.get()
+			if el and el:isVisible() then el:setVisible(false); r.uiRehid = (r.uiRehid or 0) + 1 end
+		end)
+	end
+	for _, el in ipairs(r.uiClocks) do
+		pcall(function() if el:isVisible() then el:setVisible(false); r.uiClockRehid = (r.uiClockRehid or 0) + 1 end end)
+	end
+end
+if Events.OnPreUIDraw then Events.OnPreUIDraw.Add(K.uiHideFrame)
+elseif Events.OnRenderTick then Events.OnRenderTick.Add(K.uiHideFrame) end
+-- 1.13.46: every UI element that is not full screen, with the corner or edge it sits at (1.13.45 looked at the top right only, so
+-- the clock drawn at the top left was never named), trace only. Positions are rounded: a fractional one aborted the 1.13.45 scan.
+function K.uiWhere(x, y, w, h, sw, sh)
+	local cx, cy = x + w / 2, y + h / 2
+	local v = cy < sh / 3 and "top" or (cy > sh * 2 / 3 and "bottom" or "middle")
+	local hz = cx < sw / 3 and "left" or (cx > sw * 2 / 3 and "right" or "centre")
+	return v .. " " .. hz
+end
+function K.uiCornerScan(r, label)
+	local lines, n = {}, 0
+	pcall(function()
+		local sw, sh = getCore():getScreenWidth(), getCore():getScreenHeight()
+		local list = UIManager.getUI()
+		for i = 0, list:size() - 1 do
+			local el = list:get(i)
+			local x, y, w, h = math.floor(el:getX() + 0.5), math.floor(el:getY() + 0.5), math.floor(el:getWidth() + 0.5), math.floor(el:getHeight() + 0.5)
+			if w < sw * 0.9 or h < sh * 0.9 then
+				n = n + 1
+				if #lines < 30 then
+					local ty = "?"
+					pcall(function() local tb = el:getTable(); ty = tb and tostring(tb.Type) or "java " .. tostring(el:getClass():getSimpleName()) end)
+					lines[#lines + 1] = string.format("%s (%s) at %d,%d %dx%d %s", ty, K.uiWhere(x, y, w, h, sw, sh), x, y, w, h, el:isVisible() and "visible" or "hidden")
+				end
+			end
+		end
+	end)
+	T.trace("ui: elements " .. label .. ": " .. (#lines > 0 and table.concat(lines, "; ") .. (n > #lines and string.format("; and %d more", n - #lines) or "") or "nothing found"))
+end
 function K.hideUi(r)
 	if r.plan.ui ~= "hide" then return end
 	r.uiHidden = {}
@@ -880,13 +1088,29 @@ function K.hideUi(r)
 			end
 		end
 	end)
-	pcall(function()
-		local clock = UIManager.getClock()
-		if clock and clock:isVisible() then r.uiHidden[#r.uiHidden + 1] = clock; types[#types + 1] = "clock" end
-	end)
 	for _, el in ipairs(r.uiHidden) do pcall(function() el:setVisible(false) end) end
-	local line = string.format("ui: %d game window%s hidden for the run%s", #r.uiHidden, #r.uiHidden == 1 and "" or "s",
-		#types > 0 and (" (" .. table.concat(types, ", ") .. ")") or "")
+	-- 1.13.44 (1.13.42 PC run: the clock was still drawn, with the speed buttons under it): the clock and the speed controls
+	-- are Java elements the game can replace (UIManager.setClock), so they are fetched fresh and hidden again every second
+	-- 1.13.45 (1.13.44 PC run: the script found the clock not visible at the run's start, yet it was drawn from the first frame of the
+	-- film): both are hidden on every frame whatever they say at the start; the start state is only reported
+	r.uiExtraWas, r.uiClocks, r.uiClockWas, r.uiClockNames = {}, {}, {}, {}
+	K.uiCornerScan(r, "before the hide")
+	local extraNames = {}
+	for _, ex in ipairs(K.UI_EXTRAS) do
+		local okE, why = pcall(function()
+			local el = ex.get()
+			if not el then extraNames[#extraNames + 1] = ex.name .. " (none found yet)"; return end
+			r.uiExtraWas[ex.name] = el:isVisible()
+			extraNames[#extraNames + 1] = ex.name .. (el:isVisible() and " (visible at the start)" or " (not visible at the start)")
+		end)
+		if not okE then extraNames[#extraNames + 1] = ex.name .. " (not readable: " .. tostring(why) .. ")" end
+	end
+	K.uiClockScan(r)
+	if #r.uiClockNames > 0 then extraNames[#extraNames + 1] = "mod clocks " .. table.concat(r.uiClockNames, ", ") end
+	r.uiClockNext = now() + 1000
+	local line = string.format("ui: %d game window%s hidden for the run%s%s", #r.uiHidden, #r.uiHidden == 1 and "" or "s",
+		#types > 0 and (" (" .. table.concat(types, ", ") .. ")") or "",
+		"; also " .. table.concat(extraNames, ", ") .. " (hidden on every frame, not moved)")
 	out(line); T.trace(line)
 end
 -- 1.13.19 (the user: Radio Trader and other mods show a pop-up the first time a save loads), reworked
@@ -967,8 +1191,54 @@ function K.popupTick(r, t)
 end
 function K.showUi(r)
 	for _, el in ipairs(r.uiHidden or {}) do pcall(function() el:setVisible(true) end) end
+	-- 1.13.44: the clock and speed controls too, and the visible state read back, so the restore is checked from the log
+	-- 1.13.46 (review of 1.13.45: both were forced visible after the run whatever their start state): nothing is forced. The game
+	-- shows its clock and speed controls again on its own (it did 7020 times in the 1.13.45 run); 2 s after the run their state is
+	-- read back, and only one that was visible at the start and is still hidden is shown. A mod clock goes back to its start state.
+	if r.uiExtraWas then
+		for _, el in ipairs(r.uiClocks or {}) do pcall(function() el:setVisible(r.uiClockWas[el] == true) end) end
+		local nWin, nVis = #(r.uiHidden or {}), 0
+		for _, el in ipairs(r.uiHidden or {}) do
+			local ok, v = pcall(function() return el:isVisible() end)
+			if ok and v then nVis = nVis + 1 end
+		end
+		T.trace(string.format("ui: shown again after the run: %d of %d windows visible; %d mod clock%s back to the start state; clock and speed controls hidden again %d times, mod clocks %d times during the run; their state is read 2 s from now",
+			nVis, nWin, #(r.uiClocks or {}), #(r.uiClocks or {}) == 1 and "" or "s", r.uiRehid or 0, r.uiClockRehid or 0))
+		K.uiAfter = { at = now() + 2000, was = r.uiExtraWas, trace = r.trace, clocks = r.uiClocks, clockWas = r.uiClockWas }
+	end
+	r.uiExtraWas = nil
 	r.uiHidden = nil
 end
+-- 2 s after the run (no run is going by then, so this has its own tick): the clock and speed controls' state read back, with a fix
+-- only for one that was visible at the start and is still hidden. The line goes to the run's trace file, which is written again.
+function K.uiAfterTick()
+	local a = K.uiAfter
+	if not a or now() < a.at then return end
+	K.uiAfter = nil
+	local back = {}
+	for _, ex in ipairs(K.UI_EXTRAS) do
+		local st = "?"
+		pcall(function()
+			local el = ex.get()
+			if not el then st = "none"; return end
+			local vis, fixed = el:isVisible(), false
+			if not vis and a.was[ex.name] == true then el:setVisible(true); fixed = true end
+			st = string.format("%s at %d,%d (visible at the start %s%s)", tostring(el:isVisible()), math.floor(el:getX() + 0.5), math.floor(el:getY() + 0.5),
+				tostring(a.was[ex.name]), fixed and ", shown by Test Ground" or "")
+		end)
+		back[#back + 1] = ex.name .. " visible " .. st
+	end
+	for _, el in ipairs(a.clocks or {}) do
+		pcall(function() back[#back + 1] = string.format("%s visible %s (at the start %s)", tostring(el:getTable().Type), tostring(el:isVisible()), tostring(a.clockWas[el])) end)
+	end
+	local line = "ui: 2 s after the run: " .. table.concat(back, ", ")
+	print("[TestGround] " .. line)
+	if T.last and T.last.trace and a.trace then
+		a.trace[#a.trace + 1] = line
+		pcall(writeLines, T.last.trace, a.trace, false)
+	end
+end
+Events.OnTick.Add(K.uiAfterTick)
 
 function K.filmBegin(r)
 	local f = r.plan.film

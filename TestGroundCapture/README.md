@@ -1,6 +1,8 @@
-# Test Ground Capture 1.0.8
+# Test Ground Capture 1.0.9
 
 A ZombieBuddy submod of Test Ground. It takes Test Ground's screenshots (the plan's `screenshot = N`) without the game window having to be on screen.
+
+**1.0.9 (Test Ground 1.13.44):** the save copy (`copySaveStart` / `copySaveStatus`, added in 1.0.7 for Benchmark Save) moved out to its own mod, Test Ground Save Copier (`TGSaveCopy`). Capture keeps the screenshots, the film and the aim point, and Benchmark Save no longer needs it.
 
 ## Why
 
@@ -46,7 +48,6 @@ For the showcase film: frames the game itself draws, so only the game is in the 
 |---|---|
 | `filmStart(runId, fps, width)` | `true`, or `false` if a film is running, the last one is still stopping (1.0.5), or its folder can't be made (`filmStatus` says why). fps 1 to 60, width 320 to 3840 |
 | `filmTag(tag)` | nothing. The tag of the frames from now on: a step's tag, `gap` between steps; it is `settle` at the start |
-| `copySaveStart(mode, src, dst)` / `copySaveStatus()` | 1.0.7, for Benchmark Save: copies `Saves/<mode>/<src>` to `Saves/<mode>/<dst>` on its own thread. Start returns `""` or why not (a name that isn't a plain folder name, a mode that isn't a game mode, no such save, the copy's folder exists, a copy already running). Status says `idle`, `copying N of M MB`, `done` or `failed: why`. Refused over 20 GB or without the save's size plus 512 MB free; links are left out; a failed copy removes the folder it made. Lua can't reach the game's own copy (`IngameState.copyWorld`). Never touches the original |
 | `filmStop()` | `true` if a film was running. Since 1.0.5 it returns at once (see **Stopping** below); `frames.txt` is complete when `filmStatus` no longer says `stopping` |
 | `filmStatus()` | one line: `running`, `stopping`, or once stopped the reason (`stopped by filmStop`, ...); the quality; frames written and queued; the writers and their ms per frame; the read path; the folder |
 | `filmTake()` | the counts since the last take, then resets them: `film: 812 frames written, 14 dropped (writer behind), 3 skipped (window minimised), capture 1.4 ms per frame on the render thread (worst 6.0)`, then `; by tag written/dropped/skipped: ...` when there was more than one tag. Frames are counted when written, so a step's last few frames can fall in the next take |
